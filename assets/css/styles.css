@@ -1,0 +1,15 @@
+.my-buttons {
+
+    margin-right: 10px;
+    margin-bottom: 10px;
+    display: inline-block;
+
+}
+
+.still-images {
+
+    margin-right: 10px;
+    margin-bottom: 10px;
+    display: inline-block;
+    z-index: 500;
+}
