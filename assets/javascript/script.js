@@ -4,84 +4,87 @@ $(document).ready(function () {
 
             function renderButtons() {
                 
-                // Deleting the movies prior to adding new movies
-                // (this is necessary otherwise we will have repeat buttons)
+       //This empties the button view section in order for it to be recreated from the array
                 $("#buttons-view").empty();
               
 
-
+//Start for loop to run though the pageButtons array
                 for (var i = 0; i < pageButtons.length; i++) {
 
-                    // Then dynamically generating buttons for each movie in the array
-                    // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
+               //This creates a button object
                     var a = $("<button>");
-                    // Adding a class
+                    // Gives that button a class
                     a.addClass("my-buttons");
-                    // Added a data-attribute
+                    // Added a data-name attribute to the button
                     a.attr("data-name", pageButtons[i]);
-                    // Provided the initial button text
+                    // Puts in the text from the array
                     a.text(pageButtons[i]);
-                    // Added the button to the HTML
+                    // Appends the button to the button section of the DOM
                     $("#buttons-view").append(a);
                 }
             }
 
-            // This function handles events where one button is clicked
+            // Clicking the submit button event
             $("#add-btn").on("click", function (event) {
                     event.preventDefault();
 
-                    // This line grabs the input from the textbox
+                    // sets what the user typed in to the input variable
                     var input = $("#user-input").val().trim();
 
-                    // The movie from the textbox is then added to our array
+                    // adds the button to the DOM
                     pageButtons.push(input);
 
 
                   
 
 
-                    // Calling renderButtons which handles the processing of our movie array
+                    // Calls the above function
                     renderButtons();
                 })
 
-
+                  //Puts a on page listener event for the buttons being clicked
                 $(document).on("click", ".my-buttons", displayPictures);
 
 
 
                 function displayPictures() {
-
+                    //Empties the DOM of previous searches images.
                     $("#images").empty();
-
+                  //Sets a variable for the name of the button clicked and sets the Ajax URL
                     var mySearch = $(this).attr("data-name");
                     var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + mySearch + "&api_key=BPR9YoVs8nWq7MpP4WkjHSt9YuHLv2Wx&limit=10";
             
-                    // Creates AJAX call for the specific movie button being clicked
+                    // Creates AJAX call for the button clicked
                     $.ajax({
                       url: queryURL,
                       method: "GET"
                     }).then(function(response) {
 
-                        console.log("fixed height url " + response.data[0].images.fixed_height.url);
-                        console.log("fixed height still url " + response.data[0].images.fixed_height_still.url);
-                        console.log("rating " + response.data[0].rating);
+              //for loop to add the images
 
                         for (i = 0; i < response.data.length; i++) {
                             
+                          //Creates a class for the images and sets the response data from the json
                             var imageDiv = $("<div class='still-images'>");
                             var rating = response.data[i].rating;
 
+                            //creates a p object for the rating of the image
                             var ratingText = $("<p>").text("Rating: " + rating);
 
+                            //appends the rating to the imageDiv
                             imageDiv.append(ratingText);
 
+                            //sets variables to grab the still image url and the animated image url
                             var stillImgURL = response.data[i].images.fixed_height_still.url;
                             var animatedImgURL = response.data[i].images.fixed_height.url;
+
+                            //sets the image variable to the stillImgURL src as well as sets attributes for the image state and still and animated URLs
                             var image = $("<img>").attr("src", stillImgURL).attr("data-still", stillImgURL).attr("data-animate", animatedImgURL).attr("data-state", "still");
                      
+                              //puts the Div on the DOM
                             imageDiv.append(image);
 
-                            
+                            //adds the next picture to the top of the DIV
                             $("#images").prepend(imageDiv);
                      
 
@@ -91,17 +94,17 @@ $(document).ready(function () {
                    
                 }
 
-                
-                $(document).on("click", "still-images", animateThisGIF);
+                //puts a page listener for clicking on the created images to call the animateThisGIF function
+                $(document).on("click", ".still-images", animateThisGIF);
 
+                  //Function to change state and animate or still GIF
                 function animateThisGIF() {
                    
-                    // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+                    // sets the state variable to the data-state of the clicked object
                     var state = $(this).attr("data-state");
                     console.log(state);
-                    // If the clicked image's state is still, update its src attribute to what its data-animate value is.
-                    // Then, set the image's data-state to animate
-                    // Else set src to the data-still value
+
+                    //If the state is still set state to animate and set the image src to the animated gif.  If not, set state to still and image src to still.  NOT WORKING?
                     if (state === "still") {
                       $(this).attr("src", $(this).attr("data-animate"));
                       $(this).attr("data-state", "animate");
